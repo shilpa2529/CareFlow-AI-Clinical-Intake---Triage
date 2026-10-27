@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareFlow AI — Patient Intake & Clinical Triage</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+
+  <!-- Mandatory Medical Disclaimer Banner -->
+  <div class="disclaimer-banner">
+    <span>⚠️</span>
+    <span>PROTOTYPE FOR DEMONSTRATION ONLY • NOT A MEDICAL DEVICE • USES SYNTHETIC PATIENT DATA ONLY</span>
+  </div>
+
+  <!-- Main Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/index.html" class="brand">
+        <div class="brand-icon">CF</div>
+        <div class="brand-text">
+          <h1>CareFlow AI</h1>
+          <span>Clinical Intake & Triage</span>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/intake.html" class="nav-link"><span>📥</span> Patient Intake</a>
+        <a href="/index.html" class="nav-link active"><span>⚡</span> Clinical Triage</a>
+        <a href="/dashboard.html" class="nav-link"><span>📋</span> Clinician Queue</a>
+        <a href="/lab.html" class="nav-link"><span>🧪</span> Prompt Lab</a>
+      </nav>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span id="demo-mode-badge" class="badge-mode demo">
+          <span class="dot"></span> Checking AI Engine...
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Content -->
+  <main class="main-container">
+
+    <div class="page-header"
+      style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <h2 class="page-title">Clinical AI Triage & Diagnostic Workstation</h2>
+        <p class="page-subtitle">Transform patient messages into structured, clinician-ready SBAR summaries with urgency
+          calibration and algorithmic safety guardrails.</p>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <a href="/intake.html" class="btn btn-primary btn-sm">
+          <span>📥</span> Patient Intake Portal
+        </a>
+      </div>
+    </div>
+
+    <!-- Intake Capture Card -->
+    <section class="card" style="margin-bottom: 28px;">
+      <div class="card-header">
+        <h3 class="card-title"><span>📝</span> Patient Intake Message</h3>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <select id="preset-select" class="form-select"
+            style="font-size: 0.85rem; padding: 8px 12px; min-width: 280px;">
+            <option value="">-- Load a synthetic patient case --</option>
+          </select>
+          <button id="simulate-voicemail-btn" class="btn btn-secondary btn-sm"
+            title="Simulate a spoken patient voicemail audio transcription">
+            🎙️ Simulate Voicemail Audio
+          </button>
+        </div>
+      </div>
+
+      <!-- Voicemail Player & Audio Waveform -->
+      <div id="voicemail-player-card" class="voicemail-player-card" style="display: none;">
+        <div class="voicemail-header">
+          <div class="voicemail-title">
+            <span>📞</span>
+            <strong>Inbound Voicemail Audio [Call #402 — Robert M., 62yo]</strong>
+          </div>
+          <button id="close-voicemail-btn" class="modal-close-btn"
+            style="position: static; font-size: 1.1rem;">&times;</button>
+        </div>
+
+        <div class="waveform-container" id="waveform-bars">
+          <!-- 24 dynamic waveform bars -->
+          <div class="waveform-bar" style="height: 30%"></div>
+          <div class="waveform-bar" style="height: 50%"></div>
+          <div class="waveform-bar" style="height: 75%"></div>
+          <div class="waveform-bar" style="height: 40%"></div>
+          <div class="waveform-bar" style="height: 85%"></div>
+          <div class="waveform-bar" style="height: 60%"></div>
+          <div class="waveform-bar" style="height: 90%"></div>
+          <div class="waveform-bar" style="height: 45%"></div>
+          <div class="waveform-bar" style="height: 65%"></div>
+          <div class="waveform-bar" style="height: 80%"></div>
+          <div class="waveform-bar" style="height: 95%"></div>
+          <div class="waveform-bar" style="height: 70%"></div>
+          <div class="waveform-bar" style="height: 50%"></div>
+          <div class="waveform-bar" style="height: 85%"></div>
+          <div class="waveform-bar" style="height: 60%"></div>
+          <div class="waveform-bar" style="height: 40%"></div>
+          <div class="waveform-bar" style="height: 75%"></div>
+          <div class="waveform-bar" style="height: 90%"></div>
+          <div class="waveform-bar" style="height: 55%"></div>
+          <div class="waveform-bar" style="height: 35%"></div>
+          <div class="waveform-bar" style="height: 70%"></div>
+          <div class="waveform-bar" style="height: 85%"></div>
+          <div class="waveform-bar" style="height: 45%"></div>
+          <div class="waveform-bar" style="height: 30%"></div>
+        </div>
+
+        <div class="voicemail-controls">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <button id="voicemail-play-btn" class="btn btn-primary btn-sm" style="padding: 6px 14px;">
+              ▶️ Play Spoken Audio
+            </button>
+            <span id="voicemail-time" class="voicemail-time">0:00 / 0:14</span>
+          </div>
+          <div style="font-size: 0.78rem; color: #38bdf8;">
+            🔊 Spoken Speech Audio Simulation
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-time PII Alert Banner -->
+      <div id="pii-warning-card" class="pii-warning-card" style="display: none;">
+        <div class="pii-text">
+          <strong>🔒 Privacy Guard Alert:</strong> Real-looking contact info (email, phone, or ID) was detected in this
+          message. For privacy safety, please anonymize before analysis.
+        </div>
+        <button id="mask-pii-btn" class="btn btn-secondary btn-sm"
+          style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); color: #fde68a;">
+          🛡️ Anonymize PII
+        </button>
+      </div>
+
+      <div class="form-group">
+        <textarea id="patient-text" class="form-textarea"
+          placeholder="Paste or type patient message here (e.g. symptoms, duration, concerns, current medications)..."
+          rows="5"></textarea>
+        <div id="char-counter" class="char-counter">0 / 3000</div>
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: flex-end; gap: 16px; flex-wrap: wrap;">
+        <button id="analyze-btn" class="btn btn-primary" style="padding: 12px 28px; font-size: 0.95rem;">
+          ⚡ Run CareFlow AI Triage
+        </button>
+      </div>
+    </section>
+
+    <!-- Structured Analysis Results -->
+    <div id="analysis-results-container" style="display: none;">
+
+      <!-- Emergency Banner (conditionally displayed) -->
+      <div id="result-emergency-banner" class="emergency-banner" style="display: none;">
+        <div class="emergency-icon">🚨</div>
+        <div class="emergency-text">
+          <h4>EMERGENCY CLINICAL PROTOCOL TRIGGERED</h4>
+          <p id="result-emergency-text">Urgent emergency medical care required.</p>
+        </div>
+      </div>
+
+      <!-- Triage Overview Header Card -->
+      <section class="card" style="margin-bottom: 24px; border-left: 4px solid var(--primary);">
+        <div
+          style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 12px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span id="result-urgency-badge" class="badge-urgency" style="display: none;"></span>
+            <div id="result-override-box" class="badge-override" style="display: none;">
+              🛡️ Rule Safety Net Override
+            </div>
+          </div>
+          <div id="result-meta" style="font-size: 0.78rem; color: var(--text-dim); font-family: monospace;"></div>
+        </div>
+
+        <p id="result-urgency-reason" style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;"></p>
+
+        <!-- Red Flags -->
+        <div id="result-red-flags-container" style="margin-top: 14px; display: none;">
+          <span
+            style="font-size: 0.8rem; font-weight: 700; color: #f87171; text-transform: uppercase; letter-spacing: 0.05em;">Red
+            Flag Alerts:</span>
+          <div id="result-red-flags" class="chips-container" style="margin-top: 6px;"></div>
+        </div>
+      </section>
+
+      <!-- Detailed Clinical Breakdown Grid -->
+      <div class="grid-2" style="margin-bottom: 24px;">
+
+        <!-- Left: Clinical Facts & SBAR -->
+        <section class="card">
+          <div class="card-header" style="flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <button id="view-facts-tab" class="preview-tab-btn active">🩺 Clinical Facts</button>
+              <button id="view-sbar-tab" class="preview-tab-btn">📋 SBAR Note</button>
+            </div>
+            <button id="copy-ehr-btn" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">
+              📋 Copy EHR
+            </button>
+          </div>
+
+          <!-- Tab 1: Clinical Facts -->
+          <div id="tab-facts-content">
+            <div style="margin-bottom: 16px;">
+              <div class="form-label">Chief Complaint</div>
+              <div id="result-chief-complaint" style="font-weight: 600; font-size: 1.05rem; color: var(--text-main);">
+              </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <div class="form-label">Reported Symptoms</div>
+              <div id="result-symptoms" class="chips-container"></div>
+            </div>
+
+            <div class="grid-2" style="margin-bottom: 16px;">
+              <div>
+                <div class="form-label">Duration</div>
+                <div id="result-duration" style="font-weight: 500; font-size: 0.92rem; color: var(--text-main);"></div>
+              </div>
+              <div>
+                <div class="form-label">Reported Severity</div>
+                <div id="result-severity" style="font-weight: 500; font-size: 0.92rem; color: var(--text-main);"></div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <div class="form-label">Current Medications</div>
+              <div id="result-medications" class="chips-container"></div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <div class="form-label">Known Allergies</div>
+              <div id="result-allergies" class="chips-container"></div>
+            </div>
+
+            <div>
+              <div class="form-label">Clinician Synopsis (Under 80 words)</div>
+              <div id="result-clinician-summary"
+                style="font-size: 0.88rem; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border-subtle); line-height: 1.5;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: SBAR Structured Clinical View -->
+          <div id="tab-sbar-content" style="display: none;">
+            <p style="font-size: 0.82rem; color: var(--text-dim); margin-bottom: 10px;">
+              Standardized SBAR (Situation, Background, Assessment, Recommendation) formatted for clinical handoffs and
+              medical charts.
+            </p>
+            <div class="sbar-grid">
+              <div class="sbar-box situation">
+                <div class="sbar-box-title"><span>📍</span> Situation</div>
+                <div id="sbar-situation" class="sbar-box-content"></div>
+              </div>
+              <div class="sbar-box background">
+                <div class="sbar-box-title"><span>📜</span> Background</div>
+                <div id="sbar-background" class="sbar-box-content"></div>
+              </div>
+              <div class="sbar-box assessment">
+                <div class="sbar-box-title"><span>🔍</span> Assessment</div>
+                <div id="sbar-assessment" class="sbar-box-content"></div>
+              </div>
+              <div class="sbar-box recommendation">
+                <div class="sbar-box-title"><span>🎯</span> Recommendation</div>
+                <div id="sbar-recommendation" class="sbar-box-content"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Clinical Copilot Assistant -->
+          <div class="copilot-card">
+            <div class="copilot-header">
+              <span class="copilot-title"><span>🤖</span> CareFlow Copilot Assistant</span>
+              <span style="font-size: 0.72rem; color: var(--text-dim);">Staff Clinical Support</span>
+            </div>
+
+            <div class="copilot-prompt-chips">
+              <button class="chip-btn" data-query="Check drug interactions for current medications">💊 Check Drug
+                Interactions</button>
+              <button class="chip-btn" data-query="What are the differential considerations for this patient?">🔍
+                Differential Considerations</button>
+              <button class="chip-btn" data-query="What questions should the triage nurse ask on callback?">❓ Callback
+                Questions</button>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="copilot-input" class="form-input"
+                placeholder="Ask Copilot a question about this intake..."
+                style="padding: 8px 12px; font-size: 0.85rem;" />
+              <button id="copilot-ask-btn" class="btn btn-primary btn-sm" style="white-space: nowrap;">
+                Ask
+              </button>
+            </div>
+
+            <div id="copilot-answer" class="copilot-answer-box"></div>
+          </div>
+
+        </section>
+
+        <!-- Right: Follow-Up Approval Workflow & Live Mockup -->
+        <section class="card">
+          <div class="card-header" style="flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <button id="view-editor-tab" class="preview-tab-btn active">✍️ Editor View</button>
+              <button id="view-preview-tab" class="preview-tab-btn">📱 Device Preview</button>
+            </div>
+            <span id="draft-status-badge" style="font-size: 0.8rem; font-weight: 700; color: #fbbf24;">DRAFT</span>
+          </div>
+
+          <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 130px;">
+              <label class="form-label" style="font-size: 0.75rem;">Channel</label>
+              <select id="followup-channel" class="form-select" style="padding: 8px 10px; font-size: 0.85rem;">
+                <option value="email" selected>Email (Detailed)</option>
+                <option value="sms">SMS (Concise &lt; 160 chars)</option>
+              </select>
+            </div>
+            <div style="flex: 1; min-width: 170px;">
+              <label class="form-label" style="font-size: 0.75rem;">Tone & Format</label>
+              <select id="followup-tone" class="form-select" style="padding: 8px 10px; font-size: 0.85rem;">
+                <option value="warm" selected>Warm & Empathetic</option>
+                <option value="formal">Formal & Clinical</option>
+                <option value="urgent_alert">🚨 Urgent Alert Protocol</option>
+              </select>
+            </div>
+            <div style="display: flex; align-items: flex-end;">
+              <button id="refresh-draft-btn" class="btn btn-secondary btn-sm" title="Regenerate Draft"
+                style="height: 38px;">
+                🔄
+              </button>
+            </div>
+          </div>
+
+          <!-- Missing questions incorporated -->
+          <div style="margin-bottom: 14px;">
+            <div class="form-label" style="font-size: 0.75rem;">Missing Information Questions:</div>
+            <ul id="result-missing-info"
+              style="font-size: 0.82rem; color: var(--text-muted); padding-left: 18px; line-height: 1.4;"></ul>
+          </div>
+
+          <!-- Editor View -->
+          <div id="followup-editor-view">
+            <div class="form-group">
+              <div
+                style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+                <label class="form-label" style="font-size: 0.75rem; margin-bottom: 0;">Message Body (Editable by
+                  Staff):</label>
+                <div class="voice-assist-bar" style="display: flex; align-items: center; gap: 8px;">
+                  <button type="button" id="followup-voice-dictate-btn"
+                    class="btn btn-secondary btn-sm voice-assist-btn"
+                    title="Dictate clinical instructions or addendum with microphone">
+                    🎙️ <span class="voice-btn-label">Dictate</span>
+                  </button>
+                  <button type="button" id="followup-voice-speak-btn" class="btn btn-secondary btn-sm voice-assist-btn"
+                    title="Read draft follow-up communication aloud">
+                    🔊 <span class="voice-btn-label">Read Aloud</span>
+                  </button>
+                </div>
+              </div>
+
+              <div id="followup-voice-status" class="voice-status-box" style="display: none;">
+                <span class="voice-pulse-indicator"></span>
+                <span id="followup-voice-status-text">Voice Assist Active</span>
+              </div>
+
+              <textarea id="followup-draft-text" class="form-textarea" rows="6"
+                style="font-size: 0.88rem; font-family: inherit; line-height: 1.5;"></textarea>
+              <div id="sms-segment-info" class="sms-segment-counter" style="display: none;"></div>
+            </div>
+
+            <!-- Health Literacy & Readability Analyzer Card -->
+            <div id="literacy-card" class="literacy-card">
+              <div class="literacy-header">
+                <span id="literacy-grade-label">Reading Level: Calculating...</span>
+                <span id="literacy-words-label">0 words</span>
+              </div>
+              <div class="literacy-bar-track">
+                <div id="literacy-bar-fill" class="literacy-bar-fill good" style="width: 50%;"></div>
+              </div>
+              <div id="literacy-summary-text" style="font-size: 0.76rem; color: var(--text-muted);">
+                Patient health literacy scoring evaluates readability for plain-language compliance.
+              </div>
+              <div id="jargon-alert-box" class="jargon-alert" style="display: none;">
+                <strong>⚠️ Complex Jargon Detected:</strong> Click to substitute:
+                <div id="jargon-chips-container" style="margin-top: 4px;"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Phone Mockup Device Preview -->
+          <div id="followup-device-view" style="display: none;">
+            <div class="phone-mockup-frame">
+              <div class="phone-mockup-speaker"></div>
+              <div class="phone-screen">
+                <div class="phone-header-info">
+                  <strong>CareFlow Clinic</strong>
+                  <div>SMS Delivery Preview</div>
+                </div>
+                <div id="mockup-sms-bubble" class="sms-bubble">
+                  Generating preview...
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Approval status alert -->
+          <div id="approval-notice"
+            style="display: none; padding: 12px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px;">
+          </div>
+
+          <!-- Human-in-the-loop actions -->
+          <div style="display: flex; gap: 12px; margin-top: 14px;">
+            <button id="approve-draft-btn" class="btn btn-success" style="flex: 2;">
+              ✅ Approve & Mock Send
+            </button>
+            <button id="reject-draft-btn" class="btn btn-danger" style="flex: 1;">
+              ⛔ Reject Draft
+            </button>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 8px; text-align: center;">
+            Human-in-the-loop guarantee: AI never sends communications automatically.
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <footer class="footer">
+    CareFlow AI — Patient Intake & Clinical Triage Automation Prototype • Built with Hono & TypeScript
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+
+</html>

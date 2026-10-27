@@ -1,0 +1,10 @@
+# Anthropic API credentials
+# Leave blank or set to your real key to test live Claude calls.
+# If blank, CareFlow AI operates in intelligent Demo Mode automatically.
+ANTHROPIC_API_KEY=
+CLAUDE_MODEL=claude-3-5-sonnet-20241022
+MAX_INPUT_CHARS=3000
+DAILY_REQUEST_CAP=200
+DEMO_MODE=auto
+PORT=8787
+

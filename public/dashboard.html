@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareFlow AI — Clinician Triage Dashboard</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+  <!-- Mandatory Medical Disclaimer Banner -->
+  <div class="disclaimer-banner">
+    <span>⚠️</span>
+    <span>PROTOTYPE FOR DEMONSTRATION ONLY • NOT A MEDICAL DEVICE • USES SYNTHETIC PATIENT DATA ONLY</span>
+  </div>
+
+  <!-- Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/index.html" class="brand">
+        <div class="brand-icon">CF</div>
+        <div class="brand-text">
+          <h1>CareFlow AI</h1>
+          <span>Clinical Intake & Triage</span>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/intake.html" class="nav-link"><span>📥</span> Patient Intake</a>
+        <a href="/index.html" class="nav-link"><span>⚡</span> Clinical Triage</a>
+        <a href="/dashboard.html" class="nav-link active"><span>📋</span> Clinician Queue</a>
+        <a href="/lab.html" class="nav-link"><span>🧪</span> Prompt Lab</a>
+      </nav>
+
+      <div>
+        <span id="demo-mode-badge" class="badge-mode demo">
+          <span class="dot"></span> Checking AI Engine...
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <div class="page-header" style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <h2 class="page-title">Clinician Triage Queue</h2>
+        <p class="page-subtitle">Monitor prioritized patient intake messages, review AI triage recommendations, and approve outbound follow-ups.</p>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <!-- Live Polling Toggle -->
+        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-dim); cursor: pointer; background: rgba(0,0,0,0.25); padding: 6px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+          <input type="checkbox" id="live-refresh-toggle" checked style="accent-color: #10b981;">
+          <span class="live-pulse"></span>
+          <span>Live Auto-Sync (8s)</span>
+        </label>
+
+        <!-- Urgent Audio Alert Toggle -->
+        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-dim); cursor: pointer; background: rgba(0,0,0,0.25); padding: 6px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+          <input type="checkbox" id="urgent-audio-toggle" style="accent-color: #ef4444;">
+          <span>🔔 Urgent Chime</span>
+        </label>
+
+        <button id="batch-triage-btn" class="btn btn-primary btn-sm" style="display: none;" title="Automatically triage all pending unanalyzed intakes">
+          ⚡ Triage All Unanalyzed (<span id="stat-unanalyzed-count">0</span>)
+        </button>
+        <button id="export-csv-btn" class="btn btn-secondary btn-sm" title="Download queue as CSV report">
+          📥 Export CSV
+        </button>
+        <button id="refresh-dashboard-btn" class="btn btn-secondary btn-sm">
+          🔄 Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Triage Metrics Summary Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 24px;">
+      <div class="stat-card">
+        <span class="stat-label">Total Intakes</span>
+        <div id="stat-total" class="stat-val">0</div>
+        <span class="stat-sub">Submitted via portal/SMS</span>
+      </div>
+
+      <div class="stat-card" style="border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);">
+        <span class="stat-label" style="color: #f87171;">Urgent Escalations</span>
+        <div id="stat-urgent" class="stat-val" style="color: #f87171;">0</div>
+        <span class="stat-sub">Emergency red-flags flagged</span>
+      </div>
+
+      <div class="stat-card" style="border-color: rgba(245, 158, 11, 0.4);">
+        <span class="stat-label" style="color: #fbbf24;">Soon Triage (24-48h)</span>
+        <div id="stat-soon" class="stat-val" style="color: #fbbf24;">0</div>
+        <span class="stat-sub">Needs timely clinical review</span>
+      </div>
+
+      <div class="stat-card" style="border-color: rgba(56, 189, 248, 0.4);">
+        <span class="stat-label" style="color: #38bdf8;">Pending Triage</span>
+        <div id="stat-unanalyzed" class="stat-val" style="color: #38bdf8;">0</div>
+        <span class="stat-sub">Awaiting AI triage extraction</span>
+      </div>
+    </div>
+
+    <!-- Filters & Queue Table -->
+    <section class="card">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <div>
+            <label class="form-label" style="font-size: 0.72rem;">Filter by Urgency</label>
+            <select id="filter-urgency" class="form-select" style="padding: 6px 12px; font-size: 0.82rem; width: auto;">
+              <option value="ALL">All Urgencies</option>
+              <option value="URGENT">🚨 Urgent Only</option>
+              <option value="SOON">⚠️ Soon Only</option>
+              <option value="ROUTINE">🟢 Routine / Standard</option>
+              <option value="UNANALYZED">⚡ Unanalyzed (Needs Triage)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="form-label" style="font-size: 0.72rem;">Filter by Follow-up Status</label>
+            <select id="filter-status" class="form-select" style="padding: 6px 12px; font-size: 0.82rem; width: auto;">
+              <option value="ALL">All Statuses</option>
+              <option value="DRAFT">Pending Approval</option>
+              <option value="APPROVED">Dispatched</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="min-width: 280px;">
+          <label class="form-label" style="font-size: 0.72rem;">Search Intakes</label>
+          <input 
+            type="text" 
+            id="search-input" 
+            class="form-input" 
+            placeholder="Search symptoms, complaints, or ID..." 
+            style="padding: 6px 12px; font-size: 0.82rem;"
+          />
+        </div>
+      </div>
+
+      <!-- Triage Table -->
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Submitted</th>
+              <th>Patient Presentation / Complaint</th>
+              <th>Triage Level</th>
+              <th>Follow-Up Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="intakes-table-body">
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 40px;">
+                <span class="spinner"></span> Loading triage queue...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Clinician Quick Review Modal -->
+  <div id="review-modal" class="modal-backdrop">
+    <div class="modal-container" style="max-width: 680px;">
+      <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <h3 id="modal-intake-id" style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: #38bdf8;">Review Intake</h3>
+        <span id="modal-urgency-badge" class="badge-urgency" style="display: none;"></span>
+      </div>
+
+      <div style="margin-bottom: 14px;">
+        <label class="form-label" style="font-size: 0.75rem;">Raw Patient Message</label>
+        <div id="modal-raw-text" style="font-size: 0.88rem; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; line-height: 1.45;"></div>
+      </div>
+
+      <div style="margin-bottom: 14px;">
+        <label class="form-label" style="font-size: 0.75rem;">Extracted Clinician Summary</label>
+        <div id="modal-clinician-summary" style="font-size: 0.88rem; color: var(--text-main); background: rgba(6,182,212,0.06); border: 1px solid rgba(6,182,212,0.2); padding: 12px; border-radius: 8px; line-height: 1.45;"></div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+          <label class="form-label" style="font-size: 0.75rem; margin-bottom: 0;">Draft Follow-Up Communication</label>
+          <div class="voice-assist-bar" style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" id="modal-voice-dictate-btn" class="btn btn-secondary btn-sm voice-assist-btn" title="Dictate clinical instructions or addendum with microphone">
+              🎙️ <span class="voice-btn-label">Dictate</span>
+            </button>
+            <button type="button" id="modal-voice-speak-btn" class="btn btn-secondary btn-sm voice-assist-btn" title="Read draft follow-up communication aloud">
+              🔊 <span class="voice-btn-label">Read Aloud</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="modal-voice-status" class="voice-status-box" style="display: none;">
+          <span class="voice-pulse-indicator"></span>
+          <span id="modal-voice-status-text">Voice Assist Active</span>
+        </div>
+
+        <textarea id="modal-draft-text" class="form-textarea" rows="5" style="font-size: 0.85rem; font-family: inherit; line-height: 1.45;"></textarea>
+      </div>
+
+      <div id="modal-feedback" style="display: none; padding: 10px 14px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 16px;"></div>
+
+      <div style="display: flex; gap: 10px;">
+        <button id="modal-approve-btn" class="btn btn-success" style="flex: 2;">
+          ✅ Approve & Mock Dispatch
+        </button>
+        <button id="modal-reject-btn" class="btn btn-danger" style="flex: 1;">
+          ⛔ Reject
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <footer class="footer">
+    CareFlow AI — Patient Intake & Clinical Triage Automation Prototype • Built with Hono & TypeScript
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

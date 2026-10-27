@@ -1,0 +1,105 @@
+{
+  "red_flags": [
+    {
+      "category": "Cardiac & Vascular",
+      "keywords": [
+        "chest pain",
+        "chest tightness",
+        "chest pressure",
+        "crushing chest",
+        "chest is hurting",
+        "chest hurting",
+        "pain radiating to left arm",
+        "pain radiating to arm",
+        "pain radiating to jaw",
+        "heart attack",
+        "cardiac arrest"
+      ],
+      "severity": "URGENT",
+      "emergency_advice": "Call emergency services (e.g. 911 / 999 / 000) or go to the nearest emergency department immediately for suspected acute cardiac ischemia."
+    },
+    {
+      "category": "Respiratory",
+      "keywords": [
+        "can't breathe",
+        "cannot breathe",
+        "difficulty breathing",
+        "struggling to breathe",
+        "shortness of breath",
+        "gasping for air",
+        "severe asthma attack",
+        "stridor",
+        "choking",
+        "lips are turning blue",
+        "lips turning blue",
+        "cyanosis"
+      ],
+      "severity": "URGENT",
+      "emergency_advice": "Seek immediate emergency medical care. Acute respiratory distress requires urgent clinical evaluation."
+    },
+    {
+      "category": "Neurological & Stroke",
+      "keywords": [
+        "sudden weakness",
+        "facial droop",
+        "face drooping",
+        "slurred speech",
+        "speech is slurred",
+        "cannot speak",
+        "loss of vision",
+        "sudden numbness on one side",
+        "thunderclap headache",
+        "worst headache",
+        "seizure",
+        "loss of consciousness",
+        "passed out",
+        "unresponsive"
+      ],
+      "severity": "URGENT",
+      "emergency_advice": "Call emergency services immediately. Symptoms indicate possible stroke, acute hemorrhage, or severe neurological event."
+    },
+    {
+      "category": "Anaphylaxis & Severe Allergy",
+      "keywords": [
+        "throat closing",
+        "throat is closing",
+        "tongue swelling",
+        "tongue is swelling",
+        "swelling of lips and tongue",
+        "difficulty swallowing and breathing",
+        "anaphylaxis",
+        "severe allergic reaction",
+        "epipen"
+      ],
+      "severity": "URGENT",
+      "emergency_advice": "Administer epinephrine auto-injector (EpiPen) if prescribed and call emergency medical services immediately."
+    },
+    {
+      "category": "Severe Hemorrhage & Trauma",
+      "keywords": [
+        "coughing up blood",
+        "vomiting blood",
+        "severe bleeding",
+        "uncontrolled bleeding",
+        "black tarry stools with dizziness",
+        "stab wound",
+        "gunshot"
+      ],
+      "severity": "URGENT",
+      "emergency_advice": "Apply direct pressure if external bleeding and call emergency services immediately."
+    },
+    {
+      "category": "Mental Health & Crisis",
+      "keywords": [
+        "suicidal thoughts",
+        "want to end my life",
+        "kill myself",
+        "plan to harm myself",
+        "suicide",
+        "hearing voices to hurt myself"
+      ],
+      "severity": "URGENT",
+      "emergency_advice": "Immediate help is available. Contact the Suicide & Crisis Lifeline (988 in US, 111 in UK, 13 11 14 in AU) or emergency services."
+    }
+  ]
+}

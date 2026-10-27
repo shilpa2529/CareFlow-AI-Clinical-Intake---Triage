@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareFlow AI — Patient Intake Module</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+  <!-- Mandatory Medical Disclaimer Banner -->
+  <div class="disclaimer-banner">
+    <span>⚠️</span>
+    <span>PROTOTYPE FOR DEMONSTRATION ONLY • NOT A MEDICAL DEVICE • USES SYNTHETIC PATIENT DATA ONLY</span>
+  </div>
+
+  <!-- Main Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/index.html" class="brand">
+        <div class="brand-icon">CF</div>
+        <div class="brand-text">
+          <h1>CareFlow AI</h1>
+          <span>Patient Intake Portal</span>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/intake.html" class="nav-link active"><span>📥</span> Patient Intake</a>
+        <a href="/index.html" class="nav-link"><span>⚡</span> Clinical Triage</a>
+        <a href="/dashboard.html" class="nav-link"><span>📋</span> Clinician Queue</a>
+        <a href="/lab.html" class="nav-link"><span>🧪</span> Prompt Lab</a>
+      </nav>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span id="demo-mode-badge" class="badge-mode demo">
+          <span class="dot"></span> Checking AI Engine...
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Content -->
+  <main class="main-container">
+
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <h2 class="page-title">Patient Intake Module</h2>
+        <p class="page-subtitle">Capture, transcribe, and register incoming patient communications across text, voice dictation, and voicemail for clinical review.</p>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <a href="/index.html" class="btn btn-secondary btn-sm">
+          <span>⚡</span> Open Clinical Triage
+        </a>
+        <a href="/dashboard.html" class="btn btn-secondary btn-sm">
+          <span>📋</span> View Triage Queue
+        </a>
+      </div>
+    </div>
+
+    <!-- Intake Analytics Metrics Strip (Horizontal Side-by-Side & Low Height) -->
+    <div class="grid-3 stats-grid" style="margin-bottom: 18px;">
+      <div class="stat-card" style="padding: 10px 16px;">
+        <span class="stat-label" style="font-size: 0.72rem;">Total Ingested Messages</span>
+        <div id="intake-stat-total" class="stat-val" style="font-size: 1.45rem; margin: 2px 0 0;">--</div>
+      </div>
+      <div class="stat-card" style="padding: 10px 16px; border-color: rgba(245, 158, 11, 0.4);">
+        <span class="stat-label" style="color: #fbbf24; font-size: 0.72rem;">PII Entities Masked</span>
+        <div id="intake-stat-pii" class="stat-val" style="color: #f59e0b; font-size: 1.45rem; margin: 2px 0 0;">--</div>
+      </div>
+      <div class="stat-card" style="padding: 10px 16px; border-color: rgba(16, 185, 129, 0.4);">
+        <span class="stat-label" style="color: #34d399; font-size: 0.72rem;">Clean Ingestions</span>
+        <div id="intake-stat-clean" class="stat-val" style="color: #10b981; font-size: 1.45rem; margin: 2px 0 0;">--</div>
+      </div>
+    </div>
+
+    <!-- Main Grid: Intake Workstation & Activity Stream (Horizontal Side-by-Side) -->
+    <div class="intake-layout-grid">
+
+      <!-- Column 1: Intake Capture Workstation -->
+      <div style="min-width: 0; width: 100%;">
+        <section class="card" style="width: 100%; box-sizing: border-box; padding: 18px 20px;">
+          <div class="card-header" style="margin-bottom: 12px; padding-bottom: 8px;">
+            <h3 class="card-title"><span>📝</span> Inbound Patient Message Ingestion</h3>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <select id="intake-preset-select" class="form-select" style="font-size: 0.85rem; padding: 6px 12px; min-width: 250px;">
+                <option value="">-- Load Synthetic Patient Case --</option>
+              </select>
+              <button id="intake-voicemail-btn" class="btn btn-secondary btn-sm" title="Simulate a spoken patient voicemail audio message">
+                📞 Voicemail Audio
+              </button>
+            </div>
+          </div>
+
+          <!-- Voicemail Player & Audio Waveform (Hidden by default) -->
+          <div id="intake-voicemail-card" class="voicemail-player-card" style="display: none; margin-bottom: 14px; width: 100%; box-sizing: border-box; padding: 12px 16px;">
+            <div class="voicemail-header">
+              <div class="voicemail-title">
+                <span>📞</span>
+                <strong>Inbound Voicemail Audio [Call #402 — Robert M., 62yo]</strong>
+              </div>
+              <button id="intake-close-voicemail-btn" class="modal-close-btn" style="position: static; font-size: 1.1rem;">&times;</button>
+            </div>
+
+            <div class="waveform-container" id="intake-waveform-bars" style="height: 32px;">
+              <div class="waveform-bar" style="height: 30%"></div>
+              <div class="waveform-bar" style="height: 50%"></div>
+              <div class="waveform-bar" style="height: 75%"></div>
+              <div class="waveform-bar" style="height: 40%"></div>
+              <div class="waveform-bar" style="height: 85%"></div>
+              <div class="waveform-bar" style="height: 60%"></div>
+              <div class="waveform-bar" style="height: 90%"></div>
+              <div class="waveform-bar" style="height: 45%"></div>
+              <div class="waveform-bar" style="height: 65%"></div>
+              <div class="waveform-bar" style="height: 80%"></div>
+              <div class="waveform-bar" style="height: 95%"></div>
+              <div class="waveform-bar" style="height: 70%"></div>
+              <div class="waveform-bar" style="height: 50%"></div>
+              <div class="waveform-bar" style="height: 85%"></div>
+              <div class="waveform-bar" style="height: 60%"></div>
+              <div class="waveform-bar" style="height: 40%"></div>
+              <div class="waveform-bar" style="height: 75%"></div>
+              <div class="waveform-bar" style="height: 90%"></div>
+              <div class="waveform-bar" style="height: 55%"></div>
+              <div class="waveform-bar" style="height: 35%"></div>
+              <div class="waveform-bar" style="height: 70%"></div>
+              <div class="waveform-bar" style="height: 85%"></div>
+              <div class="waveform-bar" style="height: 45%"></div>
+              <div class="waveform-bar" style="height: 30%"></div>
+            </div>
+
+            <div class="voicemail-controls">
+              <button id="intake-voicemail-play-btn" class="btn btn-primary btn-sm">▶️ Play Spoken Audio</button>
+              <span id="intake-voicemail-time" class="voicemail-time">0:00 / 0:14</span>
+            </div>
+          </div>
+
+          <!-- Voice Dictation Status Box -->
+          <div id="intake-voice-status" class="voice-status-box" style="display: none; width: 100%; box-sizing: border-box;">
+            <span class="voice-pulse-indicator"></span>
+            <span id="intake-voice-status-text">Listening for speech... speak your patient intake note.</span>
+          </div>
+
+          <!-- Message Textarea with Header Controls -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; width: 100%; box-sizing: border-box; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label for="intake-message-text" style="font-size: 0.85rem; font-weight: 600; color: var(--text-main); margin-bottom: 0;">
+                Patient Message Text
+              </label>
+              <span id="intake-pii-pill" class="pii-status-pill clean">
+                <span>🛡️</span> <span id="intake-pii-pill-text">0 PII Entities Detected</span>
+              </span>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <button id="intake-dictate-btn" class="voice-assist-btn" type="button" title="Dictate patient note with microphone">
+                <span>🎙️</span>
+                <span class="voice-btn-label">Dictate Note</span>
+              </button>
+              <button id="intake-anonymize-btn" class="btn btn-secondary btn-sm" type="button" title="Deterministically redact detected PII now">
+                🔒 Anonymize PII
+              </button>
+              <button id="intake-clear-btn" class="btn btn-secondary btn-sm" type="button" title="Clear message editor">
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <!-- Full horizontal width textarea spanning edge-to-edge within card (Compact Height) -->
+          <div style="width: 100%; box-sizing: border-box;">
+            <textarea
+              id="intake-message-text"
+              class="form-textarea form-control"
+              rows="5"
+              placeholder="Type, dictate, or load synthetic patient intake message (symptoms, duration, medications, allergies, vitals, patient contact info)..."
+              style="width: 100%; max-width: 100%; min-width: 100%; box-sizing: border-box; display: block; font-family: inherit; font-size: 0.92rem; line-height: 1.5; resize: vertical; min-height: 105px; height: 110px;"
+            ></textarea>
+          </div>
+
+          <!-- Character counter and safety toggles -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; flex-wrap: wrap; gap: 8px; width: 100%; box-sizing: border-box;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-muted); cursor: pointer;">
+              <input type="checkbox" id="intake-mask-toggle" checked style="accent-color: #06b6d4;">
+              <span>Automatically mask & anonymize PII upon storage</span>
+            </label>
+
+            <span id="intake-char-counter" style="font-size: 0.8rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">
+              0 / 3000
+            </span>
+          </div>
+
+          <!-- Submission Action Bar -->
+          <div style="margin-top: 12px; display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box;">
+            <button id="intake-submit-btn" class="btn btn-primary" style="width: 100%; padding: 10px 18px; font-size: 0.92rem;">
+              <span>📥</span> Ingest & Process Patient Intake
+            </button>
+          </div>
+
+          <!-- Ingestion Confirmation Card (Populated after submission) -->
+          <div id="intake-result-card" class="intake-result-banner" style="display: none; width: 100%; box-sizing: border-box;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+              <div>
+                <span style="font-size: 0.76rem; font-weight: 700; color: #10b981; letter-spacing: 0.05em; text-transform: uppercase;">
+                  ✅ Ingestion Successful
+                </span>
+                <h4 style="margin-top: 4px; font-size: 1.1rem; color: #f8fafc;">
+                  Intake Record Registered
+                </h4>
+              </div>
+              <div id="intake-result-badge" class="intake-id-badge">
+                <span id="intake-result-id">intk_...</span>
+                <button id="intake-copy-id-btn" class="copy-icon-btn" title="Copy Intake ID">📋</button>
+              </div>
+            </div>
+
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); margin-bottom: 16px; width: 100%; box-sizing: border-box;">
+              <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 4px;">SECURE STORED TEXT PREVIEW:</div>
+              <div id="intake-result-text" style="font-size: 0.88rem; color: #e2e8f0; white-space: pre-wrap; font-family: 'JetBrains Mono', monospace; word-break: break-word;"></div>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <a id="intake-triage-link" href="#" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
+                <span>⚡</span> Proceed to AI Clinical Triage
+              </a>
+              <a href="/dashboard.html" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
+                <span>📋</span> View in Clinician Queue
+              </a>
+              <button id="intake-new-btn" class="btn btn-secondary btn-sm" type="button">
+                <span>➕</span> Ingest Another Intake
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Column 2: Recent Ingestion Stream (Compact Height & No Under-Sentence) -->
+      <div style="min-width: 0; width: 100%;">
+        <section class="card" style="width: 100%; box-sizing: border-box; padding: 18px 20px;">
+          <div class="card-header" style="margin-bottom: 10px; padding-bottom: 8px;">
+            <h3 class="card-title"><span>📡</span> Recent Ingestion Stream</h3>
+            <button id="refresh-stream-btn" class="btn btn-secondary btn-sm" title="Refresh recent intakes">
+              🔄 Refresh
+            </button>
+          </div>
+
+          <div id="intake-stream-list" class="intake-stream-container" style="max-height: 380px;">
+            <div style="text-align: center; padding: 24px; color: var(--text-dim);">
+              Loading intake stream...
+            </div>
+          </div>
+        </section>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Application Logic -->
+  <script src="/app.js"></script>
+</body>
+</html>

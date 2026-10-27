@@ -1,0 +1,37 @@
+{
+  "name": "careflow-ai",
+  "version": "1.0.0",
+  "description": "Patient Intake & Follow-Up Automation with human-in-the-loop review",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "dev:worker": "wrangler dev",
+    "build": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "eval": "tsx src/scripts/run-eval.ts"
+  },
+  "keywords": [
+    "healthcare",
+    "ai",
+    "triage",
+    "hono",
+    "prompt-engineering"
+  ],
+  "author": "Shilpa",
+  "license": "MIT",
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "hono": "^4.6.14",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241218.0",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8",
+    "wrangler": "^3.99.0"
+  }
+}
